@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autorização Mercado Livre - Tarju</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 30px;
+            color: #222;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .codigo {
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            word-break: break-all;
+            margin: 15px 0;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .aviso {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .erro {
+            color: #b00020;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <h1>Autorização Mercado Livre</h1>
+
+        <p id="mensagem">
+            Verificando o retorno da autorização...
+        </p>
+
+        <section id="resultado" hidden>
+            <strong>Código de autorização:</strong>
+
+            <div id="codigo" class="codigo"></div>
+
+            <button id="copiar" type="button">
+                Copiar código
+            </button>
+
+            <p class="aviso">
+                Não compartilhe este código com outras pessoas.
+                Ele será utilizado somente pelo programa de análise da Tarju.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const parametros = new URLSearchParams(window.location.search);
+        const codigo = parametros.get("code");
+        const erro = parametros.get("error");
+        const descricaoErro = parametros.get("error_description");
+
+        const mensagem = document.getElementById("mensagem");
+        const resultado = document.getElementById("resultado");
+        const campoCodigo = document.getElementById("codigo");
+        const botaoCopiar = document.getElementById("copiar");
+
+        if (codigo) {
+            mensagem.textContent = "Autorização realizada com sucesso.";
+            campoCodigo.textContent = codigo;
+            resultado.hidden = false;
+
+            history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+            botaoCopiar.addEventListener("click", async () => {
+                try {
+                    await navigator.clipboard.writeText(codigo);
+                    botaoCopiar.textContent = "Código copiado";
+                } catch {
+                    botaoCopiar.textContent = "Selecione e copie manualmente";
+                }
+            });
+        } else if (erro) {
+            mensagem.className = "erro";
+            mensagem.textContent =
+                "A autorização não foi concluída: " +
+                (descricaoErro || erro);
+        } else {
+            mensagem.textContent =
+                "Página de retorno pronta. Nenhuma autorização recebida.";
+        }
+    </script>
+</body>
+</html>
